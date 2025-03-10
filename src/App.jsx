@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import ChatbotIcon from "./components/ChatbotIcon";
-import ChatForm from "./components/ChatForm";
-import ChatMessage from "./components/ChatMessage";
-import ChatHeader from "./components/ChatHeader";
+import { getMessageText } from "./utils";
+import { ChatForm, ChatBody, ChatHeader, ChatButton } from "./components";
 
 const App = () => {
   const [messages, setMessages] = useState([]);
@@ -38,11 +36,11 @@ const App = () => {
         import.meta.env.VITE_API_URL,
         requestOptions
       );
-
       const data = await response.json();
-      const apiResponceText = data.candidates[0].content.parts[0].text
-        .replace(/\*\*(.*?)\*\*/g, "$1")
-        .trim();
+
+      const apiResponceText = getMessageText(
+        data.candidates[0].content.parts[0]
+      );
 
       updateMessages(apiResponceText);
     } catch (error) {
@@ -59,26 +57,10 @@ const App = () => {
 
   return (
     <div className={`container ${showChatbot ? "show-chatbot" : ""}`}>
-      <button
-        onClick={() => setShowChatbot((prev) => !prev)}
-        id="chatbot-toggler"
-      >
-        <span className="material-symbols-rounded">mode_comment</span>
-        <span className="material-symbols-rounded">close</span>
-      </button>
+      <ChatButton setShowChatbot={setShowChatbot} />
       <div className="chatbot-popup">
         <ChatHeader setShowChatbot={setShowChatbot} />
-        <div ref={chatBodyRef} className="chat-body">
-          <div className="message bot-message">
-            <ChatbotIcon />
-            <p className="message-text">
-              Hi, I'm the Chatbot. How can I help you today?
-            </p>
-          </div>
-          {messages.map((message, index) => (
-            <ChatMessage key={index} message={message} />
-          ))}
-        </div>
+        <ChatBody chatBodyRef={chatBodyRef} messages={messages} />
         <div className="chat-footer">
           <ChatForm
             setMessages={setMessages}
