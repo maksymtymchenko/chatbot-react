@@ -2,20 +2,22 @@ import { useState, useRef, useEffect } from "react";
 import ChatbotIcon from "./components/ChatbotIcon";
 import ChatForm from "./components/ChatForm";
 import ChatMessage from "./components/ChatMessage";
+import ChatHeader from "./components/ChatHeader";
 
 const App = () => {
   const [messages, setMessages] = useState([]);
   const [showChatbot, setShowChatbot] = useState(false);
+
   const chatBodyRef = useRef(null);
 
-  const generateBotResponse = async (messages) => {
-    const updateMessages = (text, isError = false) => {
-      setMessages((prev) => [
-        ...prev.filter((msg) => msg.text !== "Thinking..."),
-        { role: "model", text, isError },
-      ]);
-    };
+  const updateMessages = (text, isError = false) => {
+    setMessages((prev) => [
+      ...prev.filter((msg) => msg.text !== "Thinking..."),
+      { role: "model", text, isError },
+    ]);
+  };
 
+  const generateBotResponse = async (messages) => {
     const mappedMessage = messages.map(({ role, text }) => ({
       role,
       parts: [{ text }],
@@ -65,18 +67,7 @@ const App = () => {
         <span className="material-symbols-rounded">close</span>
       </button>
       <div className="chatbot-popup">
-        <div className="chat-header">
-          <div className="header-info">
-            <ChatbotIcon />
-            <h2 className="logo-text">Chatbot</h2>
-          </div>
-          <button
-            onClick={() => setShowChatbot((prev) => !prev)}
-            className="material-symbols-rounded"
-          >
-            keyboard_arrow_down
-          </button>
-        </div>
+        <ChatHeader setShowChatbot={setShowChatbot} />
         <div ref={chatBodyRef} className="chat-body">
           <div className="message bot-message">
             <ChatbotIcon />
